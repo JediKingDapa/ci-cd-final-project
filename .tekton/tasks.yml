@@ -3,7 +3,7 @@ kind: Task
 metedata:
   name: cleanup
 spec:
-  description: This task will clean the output workspace
+  description: This task will clean the output workspace.
   workspaces:
     - name: source
   steps: 
@@ -32,7 +32,6 @@ spec:
               # Delete files and directories starting with .. plus any other character
               rm -rf "${WORKSPACE_SOURCE_PATH}"/..?*
             fi
-            
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -40,7 +39,7 @@ metedata:
   name: nose
 spec:
   workspaces:
-    - name: source
+    name: source
   params:
     - name: args
       description: Arguments to pass to nose
@@ -56,3 +55,16 @@ spec:
           python -m pip install --upgrade pip wheel
           pip install -r requirements.txt
           nosetests $(params.args)
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metedata:
+  name: deploy
+spec:
+  workspaces:
+    name: source
+  params:
+    - name: deploy
+      taskref:
+        name: openshift-client
+        kind: ClusterTask
